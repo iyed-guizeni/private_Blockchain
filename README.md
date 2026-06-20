@@ -83,7 +83,7 @@ Key design patterns:
 | **Strategy / Policy Object** | `FormalVerificationPolicy` injected into `RuntimeMonitor` |
 | **Observer** | Monitor subscribes to contract events via `create_filter()` |
 | **Circuit Breaker** | Monitor locks `isStateConsumable=False` on first violation |
-| **Dataclass DTOs** | `CommitmentPacket`, `MonitorVerdict` - clean layer boundaries |
+| **Dataclass DTOs** | `CommitmentPacket`, `MonitorVerdict` , clean layer boundaries |
 
 ---
 

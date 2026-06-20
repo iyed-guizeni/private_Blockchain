@@ -1,5 +1,5 @@
 # Private Blockchains with Public Anchoring
-## Formal Model & Runtime Verification — Micro-Project
+## Formal Model & Runtime Verification 
 
 ---
 

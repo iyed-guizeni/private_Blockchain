@@ -67,8 +67,8 @@ Key design decisions:
 
 | Decision | Rationale |
 |---|---|
-| `submitCheckpoint()` performs **zero** semantic validation | Intentional — demonstrates the blind-contract problem |
-| `DuplicateSequenceDetected` event emitted but not enforced | Informational signal only — contract cannot judge meaning |
+| `submitCheckpoint()` performs **zero** semantic validation | Intentional - demonstrates the blind-contract problem |
+| `DuplicateSequenceDetected` event emitted but not enforced | Informational signal only - contract cannot judge meaning |
 | `setConsumability(bool)` restricted to `owner` | Owner represents the Runtime Monitor's publishing key |
 | Append-only `checkpointSequences[]` array | Enables full history enumeration for formal audit |
 | Immutable `owner` via `immutable` keyword | Prevents post-deploy authority hijacking |
@@ -204,7 +204,7 @@ psm.trigger_state_manipulation_attack(
 **What:** Submits a new sequence number but reuses an old state root hash.  
 **Why realistic:** A replay of an earlier valid proof against a new sequence slot.  
 **Contract behavior:** Accepts unconditionally (hashes look distinct from its perspective).  
-**Monitor detection:** C3 fires — root already present in `seen_state_roots`.
+**Monitor detection:** C3 fires - root already present in `seen_state_roots`.
 
 ---
 

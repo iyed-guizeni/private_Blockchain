@@ -6,16 +6,11 @@
 ## Table of Contents
 
 1. [Project Overview](#1-project-overview)
-2. [Core Thesis Problem](#2-core-thesis-problem)
-3. [Architecture](#3-architecture)
-4. [File Structure](#4-file-structure)
-5. [Installation & Execution](#5-installation--execution)
-6. [Formal Verification Policy](#6-formal-verification-policy-fvp)
-7. [Attack Taxonomy](#7-attack-taxonomy)
-8. [Simulated Results & Log Analysis](#8-simulated-results--log-analysis)
-9. [Alignment with PhD Proposal](#9-alignment-with-phd-proposal)
-10. [Extension Roadmap](#10-extension-roadmap)
-
+2. [File Structure](#4-file-structure)
+3. [Installation & Execution](#5-installation--execution)
+4. [Formal Verification Policy](#6-formal-verification-policy-fvp)
+5. [Attack Taxonomy](#7-attack-taxonomy)
+6. [Simulated Results & Log Analysis](#8-simulated-results--log-analysis)
 ---
 
 ## 1. Project Overview
@@ -54,53 +49,6 @@ A malicious or compromised private-chain operator can submit **cryptographically
 ### The Solution Demonstrated Here
 
 An off-chain **Runtime Monitor** with a **Formal Verification Policy (FVP)** observes the public event stream and enforces semantic constraints the on-chain code cannot. Its verdicts are published back on-chain, closing the trust loop.
-
----
-
-## 3. Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        SIMULATION LAYERS                            │
-│                                                                     │
-│  ┌──────────────────────────┐                                       │
-│  │  LAYER 1: Private Domain │  ← Python PrivateStateMachine        │
-│  │                          │                                       │
-│  │  S_t ∈ ℤ≥0               │  State space                        │
-│  │  S_{t+1} = S_t + Δ       │  Transition function                 │
-│  │  R_t = SHA-256(S_t‖seq‖n)│  State root commitment              │
-│  │  π_t = SHA-256(R_t‖seq‖k)│  Mock ZKP                          │
-│  │                          │                                       │
-│  │   Attack mode: injects  │                                       │
-│  │    sequence_jump, replay,│                                       │
-│  │    or stale_root attack  │                                       │
-│  └──────────┬───────────────┘                                       │
-│             │  CommitmentPacket(R_t, seq_t, π_t)                   │
-│             ▼                                                       │
-│  ┌──────────────────────────┐                                       │
-│  │  LAYER 2: Public Domain  │  ← Solidity PublicAnchorContract     │
-│  │                          │                                       │
-│  │  submitCheckpoint()      │  Accepts ALL packets unconditionally │
-│  │  → stores Checkpoint     │                                       │
-│  │  → emits CheckpointPublished event                               │
-│  │                          │                                       │
-│  │  isStateConsumable bool  │  Written by monitor verdict          │
-│  └──────────┬───────────────┘                                       │
-│             │  CheckpointPublished(R_t, seq_t, π_t, block, ts)     │
-│             ▼                                                       │
-│  ┌──────────────────────────┐                                       │
-│  │  LAYER 3: Runtime Monitor│  ← Python RuntimeMonitor             │
-│  │                          │                                       │
-│  │  FVP Constraint C1:      │  seq_n == prev_seq + 1              │
-│  │  FVP Constraint C2:      │  min_Δt ≤ interval ≤ max_Δt        │
-│  │  FVP Constraint C3:      │  root_n ∉ seen_roots               │
-│  │                          │                                       │
-│  │  PASS → "Consumable Fact"│  setConsumability(true)             │
-│  │  FAIL → "Violation"      │  setConsumability(false)            │
-│  └──────────────────────────┘                                       │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
 
 ---
 
@@ -288,13 +236,6 @@ STEP  2/8
 
 ```
 STEP  5/8
-  ╔═══════════════════════════════════════════════════════╗
-  ║     ADVERSARIAL ATTACK INJECTION                     ║
-  ║      Type: SEQUENCE_JUMP (gap of 3)                    ║
-  ║      The blind contract WILL accept this packet.       ║
-  ║      The Runtime Monitor WILL detect the anomaly.      ║
-  ╚═══════════════════════════════════════════════════════╝
-
 12:07:47 [ATTACK ]   Attack mode ACTIVATED | type=SEQUENCE_JUMP | jump_magnitude=3
 12:07:47 [ATTACK ]  SEQUENCE_JUMP injected | seq=7 (jumped +3, skipped 2 seq numbers) |
                    root=7584bd0cebdd… | Proof is SHA-256-valid (FOOLS contract)
